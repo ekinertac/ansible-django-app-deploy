@@ -2,7 +2,7 @@
 
 #### Note: some configurations maybe harmful to your server, please read all the code with care
 
-Install [Ansible](https://www.ansible.com/) globally 'pip install ansible' or 'brew install ansible'.
+Install [Ansible](https://www.ansible.com/) globally `pip install ansible` or `brew install ansible`.
 
 To set app-specific configs open `env_vars/base.yml` file and change the values to what suits your app
 
