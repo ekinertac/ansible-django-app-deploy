@@ -1,5 +1,6 @@
 ---
-server_name: gmcc.staging.kurigo.com
-app_name: gmcc
-repo_git_url: "git@github.com:crick3tdu3l/cricketfantasyapp.git"
-django_settings: config.settings.local
+
+server_name: DOMAIN_NAME
+app_name: APPLICATION_NAME
+repo_git_url: GIT_REPO_URL
+django_settings: DJANGO_SETTINGS_MODULE
