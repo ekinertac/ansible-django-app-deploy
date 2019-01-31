@@ -1,0 +1,21 @@
+---
+
+- name: Provision a Beta web server
+  hosts: all
+  become: yes
+  become_user: "{{ user }}"
+  remote_user: root
+
+  vars:
+    - update_apt_cache: yes
+  vars_files:
+    - "env_vars/base.yml"
+    - "env_vars/{{ env }}.yml"
+
+  roles:
+    - user
+    - common
+    - security
+    - clone-repo
+    - nginx
+    - app

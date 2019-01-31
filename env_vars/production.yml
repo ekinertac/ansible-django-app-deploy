@@ -1,0 +1,10 @@
+---
+user: root
+
+django_settings: config.settings.local
+
+system_user: deployer
+user_path: "/home/{{ system_user }}"
+virtualenv_path: "{{ user_path }}/env"
+repo_path: "{{ user_path }}/app"
+pip_requirements: local.txt

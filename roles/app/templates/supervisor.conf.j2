@@ -1,0 +1,36 @@
+[program:{{ app_name }}]
+environment=DJANGO_SETTINGS_MODULE="{{ django_settings }}"
+command={{ virtualenv_path }}/bin/gunicorn config.wsgi:application -b 0.0.0.0:9955 -w 3
+directory={{ repo_path }}
+autostart=true
+autorestart=true
+redirect_stderr=true
+user={{ system_user }}
+
+#[program:celery]
+#environment=DJANGO_SETTINGS_MODULE="settings.{{ django_settings }}"
+#command={{ virtualenv_path }}/bin/celery worker -A celery_app --loglevel=INFO --statedb={{ user_path }}celery.state
+#directory={{ repo_path }}
+#user={{ system_user }}
+#numprocs=1
+#stdout_logfile=/var/log/celery/worker.log
+#stderr_logfile=/var/log/celery/worker.log
+#autostart=true
+#autorestart=true
+#startsecs=10
+#stopwaitsecs = 600
+#killasgroup=true
+#priority=998
+
+#[program:celerybeat]
+#environment=DJANGO_SETTINGS_MODULE="settings.{{ django_settings }}"
+#command={{ virtualenv_path }}/bin/celery beat -A celery_app --loglevel=INFO
+#directory={{ repo_path }}
+#user={{ system_user }}
+#numprocs=1
+#stdout_logfile=/var/log/celery/beat.log
+#stderr_logfile=/var/log/celery/beat.log
+#autostart=true
+#autorestart=true
+#startsecs=10
+#priority=999

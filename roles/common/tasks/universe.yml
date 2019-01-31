@@ -1,0 +1,17 @@
+---
+
+- name: Ensure universe repositories added
+  apt_repository:
+    repo: "deb http://archive.ubuntu.com/ubuntu/ xenial universe"
+
+- name: Ensure universe-updates repositories added
+  apt_repository:
+    repo: "deb http://archive.ubuntu.com/ubuntu/ xenial-updates universe"
+
+- name: Ensure universe-security repositories added
+  apt_repository:
+    repo: "deb http://security.ubuntu.com/ubuntu/ xenial-security universe"
+
+- name: Ensure apt repositories updated
+  apt:
+    autoremove: yes

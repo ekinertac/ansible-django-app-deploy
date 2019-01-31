@@ -1,0 +1,65 @@
+---
+
+- name: Deploy latest changes
+  hosts: all
+  remote_user: root
+
+  vars_files:
+    - env_vars/base.yml
+    - env_vars/production.yml
+
+  tasks:
+    - name: clone repo
+      become: yes
+      become_user: "{{ system_user }}"
+      git:
+        repo: "{{ repo_git_url }}"
+        dest: "{{ repo_path }}"
+        accept_hostkey: yes
+        force: yes
+        recursive: no
+      when: repo_git_url is defined
+
+    - name: reload nginx
+      service: name=nginx state=restarted
+
+    - name: install python requirements
+      pip: requirements={{ repo_path }}/requirements/{{ pip_requirements }} virtualenv={{ virtualenv_path }}
+
+    - name: Creates back up directory
+      became: yes
+      became_user: "{{ system_user }}"
+      file:
+        path: sqlite_dumps
+        state: directory
+
+    - name: backup postgresql
+      copy:
+        src: "{{ repo_path }}/db.sqlite3"
+        dest: "{{ user_path }}/sqlite_dumps/db.sqlite3-{{ ansible_date_time.iso8601 }}"
+        remote_src: yes
+
+    - name: migrate
+      django_manage:
+        command: migrate
+        settings: "{{ django_settings }}"
+        virtualenv: "{{ virtualenv_path }}"
+        app_path: "{{ repo_path }}"
+
+    - name: collect static
+      django_manage:
+        command: "collectstatic --settings={{ django_settings }} --noinput -l"
+        virtualenv: "{{ virtualenv_path }}"
+        app_path: "{{ repo_path }}"
+
+    - name: reload supervisor
+      supervisorctl:
+        name: "{{ app_name }}"
+        state: restarted
+
+#    - name: reload celery worker
+#      supervisorctl: name=celery state=restarted
+#
+#    - name: reload celery beat
+#      supervisorctl: name=celerybeat state=restarted
+#

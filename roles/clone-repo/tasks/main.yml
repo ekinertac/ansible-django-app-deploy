@@ -1,0 +1,14 @@
+---
+- name: installing git
+  apt:
+    name: git
+    state: present
+
+- name: cloning repo
+  become: yes
+  become_user: "{{ system_user }}"
+  git:
+    repo: "{{ repo_git_url }}"
+    dest: "{{ repo_path }}"
+    accept_hostkey: yes
+    force: yes

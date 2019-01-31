@@ -1,0 +1,4 @@
+---
+server_name: DOMAIN_NAME
+app_name: APPLICATION_NAME
+repo_git_url: GIT_REPO_URL

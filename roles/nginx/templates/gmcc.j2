@@ -1,0 +1,23 @@
+server {
+    listen 80;
+    server_name             {{ server_name }};
+
+    client_max_body_size    5m;
+
+    access_log              /var/log/nginx/{{ server_name }}-access.log;
+    error_log               /var/log/nginx/{{ server_name }}-error.log;
+
+    location /static/ {
+        alias {{ repo_path }}/static_root/;
+    }
+
+    location /media/ {
+        alias {{ repo_path }}/media/;
+    }
+
+    location / {
+        proxy_pass          http://0.0.0.0:9955;
+        proxy_set_header    Host $host;
+        proxy_set_header    X-Real-IP $remote_addr;
+    }
+}

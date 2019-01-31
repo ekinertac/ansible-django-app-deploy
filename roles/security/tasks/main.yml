@@ -1,0 +1,28 @@
+---
+
+- name: Adjust APT update intervals
+  template:
+    src: apt_periodic
+    dest: /etc/apt/apt.conf.d/10periodic
+
+- name: Find ChallengeResponseAuthentication and set to no
+  lineinfile:
+    dest: /etc/ssh/sshd_config
+    regexp: "^ChallengeResponseAuthentication"
+    line: 'ChallengeResponseAuthentication no'
+    backrefs: yes
+
+- name: Find PasswordAuthentication set to no
+  lineinfile:
+    dest: /etc/ssh/sshd_config
+    regexp: '^PasswordAuthentication'
+    line: 'PasswordAuthentication no'
+    backrefs: yes
+
+- name: Find UsePAM and set to no
+  lineinfile:
+    dest: /etc/ssh/sshd_config
+    regexp: '^UsePAM'
+    line: 'UsePAM no'
+    backrefs: yes
+  notify: Restart ssh

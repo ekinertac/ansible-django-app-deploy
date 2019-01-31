@@ -1,0 +1,64 @@
+---
+- name: install python
+  apt:
+    name:
+      - python3
+      - python3-pip
+      - python-pip
+      - python-virtualenv
+      - python-dev
+      - supervisor
+    state: present
+  tags: [pip, python_packages]
+
+- name: Ensure all processes managed by Supervisor are stopped if exists
+  command: supervisorctl stop all
+
+- name: create virtualenv
+  command: "virtualenv {{ virtualenv_path }} -p /usr/bin/python3"
+  become: yes
+  become_user: "{{ system_user }}"
+
+- name: install python requirements
+  pip:
+    requirements: "{{ repo_path }}/requirements/{{ pip_requirements }}"
+    virtualenv: "{{ virtualenv_path }}"
+  become: yes
+  become_user: "{{ system_user }}"
+  tags: [python,pip,virtualenv]
+
+- name: collect static
+  become: yes
+  become_user: "{{ system_user }}"
+  django_manage:
+    command: "collectstatic --noinput -l"
+    settings: "{{ django_settings }}"
+    virtualenv: "{{ virtualenv_path }}"
+    app_path: "{{ repo_path }}"
+
+- name: migrate
+  become: yes
+  become_user: "{{ system_user }}"
+  django_manage:
+    command: migrate
+    settings: "{{ django_settings }}"
+    virtualenv: "{{ virtualenv_path }}"
+    app_path: "{{ repo_path }}"
+
+- name: create supervisord config file
+  template:
+    src: supervisor.conf.j2
+    dest: "/etc/supervisor/conf.d/{{ app_name }}.conf"
+    owner: "{{ system_user }}"
+    group: "{{ system_user }}"
+    mode: 0640
+
+- name: restart supervisor
+  service:
+    name: supervisor
+    state: restarted
+
+- name: restart nginx
+  service:
+    name: nginx
+    state: restarted
